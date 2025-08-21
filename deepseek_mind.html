@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Magic Number Matrix - I Can Read Your Mind</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --violet: #7c3aed;
+      --green: #22c55e;
+      --red: #ef4444;
+      --light-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans";
+      color: var(--ink);
+      background: var(--light-bg);
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .card {
+      width: min(680px, 92vw);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 16px 40px rgba(2, 6, 23, .08);
+      text-align: center;
+    }
+    
+    h1 {
+      margin: 0.5rem 0;
+      font-size: clamp(22px, 4vw, 32px);
+      color: var(--violet);
+    }
+    
+    p {
+      margin: 0.75rem 0;
+      color: var(--muted);
+    }
+    
+    .pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 1rem;
+    }
+    
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+      gap: 8px;
+      margin: 1.5rem 0;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    
+    .number {
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      margin: 8px;
+      transition: all 0.2s ease;
+      font-size: 16px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    .start {
+      background: linear-gradient(90deg, var(--violet), #a855f7);
+      color: white;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, .35);
+      padding: 14px 32px;
+      font-size: 18px;
+      margin-top: 1rem;
+    }
+    
+    .yes {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+    
+    .no {
+      background: var(--red);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .replay {
+      background: linear-gradient(90deg, var(--violet), #a855f7);
+      color: white;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, .35);
+      margin-top: 1.5rem;
+    }
+    
+    .result {
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--violet);
+      margin: 1rem 0;
+      text-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+    }
+    
+    .hint {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 1.5rem;
+      line-height: 1.5;
+    }
+    
+    .card-counter {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .instruction {
+      background: #f0f9ff;
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      border-left: 4px solid #0ea5e9;
+    }
+    
+    @media (max-width: 600px) {
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .numbers-grid {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+      }
+      
+      .result {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="pill">Mind‑Reading Math ✨</div>
+    <h1>I Can Read Your Mind</h1>
+    
+    <div id="intro">
+      <p>Think of a number between <strong>1 and 63</strong> and keep it in your mind. I will guess your number by reading your thoughts!</p>
+      
+      <div class="instruction">
+        <p>I'll show you 6 cards with numbers. For each card, click <strong>YES</strong> if your number is on the card, or <strong>NO</strong> if it's not.</p>
+      </div>
+      
+      <p>The magic of mathematics will reveal your number!</p>
+      <button id="startBtn" class="btn start">Begin Magic</button>
+    </div>
+    
+    <div id="gameScreen" style="display: none;">
+      <div class="card-counter">Card <span id="currentCard">1</span> of 6</div>
+      <h2>Is your number on this card?</h2>
+      <div id="numbersContainer" class="numbers-grid"></div>
+      <div>
+        <button id="yesBtn" class="btn yes">Yes, it's here ✅</button>
+        <button id="noBtn" class="btn no">No, it's not ❌</button>
+      </div>
+    </div>
+    
+    <div id="resultScreen" style="display: none;">
+      <h2>Your number is...</h2>
+      <div id="resultNumber" class="result">?</div>
+      <p>I've read your mind through the power of mathematics! 🧠</p>
+      <button id="playAgain" class="btn replay">Play Again</button>
+      
+      <div class="hint">
+        <p><strong>How it works:</strong> Each card represents a power of two (1, 2, 4, 8, 16, 32). When you say "Yes", I add that value to the total. This binary magic reconstructs your number!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Game variables
+      const BIT_VALUES = [1, 2, 4, 8, 16, 32];
+      let currentStep = 0;
+      let userNumber = 0;
+      
+      // DOM elements
+      const introScreen = document.getElementById('intro');
+      const gameScreen = document.getElementById('gameScreen');
+      const resultScreen = document.getElementById('resultScreen');
+      const numbersContainer = document.getElementById('numbersContainer');
+      const currentCardEl = document.getElementById('currentCard');
+      const resultNumberEl = document.getElementById('resultNumber');
+      
+      const startBtn = document.getElementById('startBtn');
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+      const playAgainBtn = document.getElementById('playAgain');
+      
+      // Initialize game
+      startBtn.addEventListener('click', startGame);
+      yesBtn.addEventListener('click', () => handleAnswer(true));
+      noBtn.addEventListener('click', () => handleAnswer(false));
+      playAgainBtn.addEventListener('click', resetGame);
+      
+      // Game functions
+      function startGame() {
+        introScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        currentStep = 0;
+        userNumber = 0;
+        showCurrentCard();
+      }
+      
+      function showCurrentCard() {
+        if (currentStep >= BIT_VALUES.length) {
+          showResult();
+          return;
+        }
+        
+        currentCardEl.textContent = currentStep + 1;
+        numbersContainer.innerHTML = '';
+        
+        const currentBitValue = BIT_VALUES[currentStep];
+        
+        // Generate numbers for this card
+        for (let n = 1; n <= 63; n++) {
+          if (n & currentBitValue) {
+            const numberEl = document.createElement('div');
+            numberEl.className = 'number';
+            numberEl.textContent = n;
+            numbersContainer.appendChild(numberEl);
+          }
+        }
+      }
+      
+      function handleAnswer(isYes) {
+        if (isYes) {
+          userNumber += BIT_VALUES[currentStep];
+        }
+        
+        currentStep++;
+        showCurrentCard();
+      }
+      
+      function showResult() {
+        gameScreen.style.display = 'none';
+        resultScreen.style.display = 'block';
+        resultNumberEl.textContent = userNumber;
+      }
+      
+      function resetGame() {
+        resultScreen.style.display = 'none';
+        introScreen.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
